@@ -12,7 +12,7 @@ import httpx
 from bs4 import BeautifulSoup
 
 import state
-from config import PAUSE_OLX, OPENING_KEYWORDS
+from config import OPENING_KEYWORDS
 
 logger = logging.getLogger(__name__)
 
