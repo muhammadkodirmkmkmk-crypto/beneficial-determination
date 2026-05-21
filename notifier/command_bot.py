@@ -136,7 +136,10 @@ async def _handle_update(update: dict):
         logger.debug(f"Command bot: игнорирую сообщение от {chat_id} (не владелец)")
         return
 
-    text = msg.get("text", "").strip().split()[0].lower()  # первое слово команды
+    raw_text = msg.get("text", "").strip()
+    if not raw_text:
+        return  # стикер, фото или пересланное сообщение без текста
+    text = raw_text.split()[0].lower()
 
     if text in ("/status", "/status@zetta_lead_bot"):
         await _handle_status()
