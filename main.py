@@ -170,6 +170,21 @@ async def main():
     database.init_db()
     logger.info("База данных готова")
 
+    # Проверяем обязательные переменные окружения
+    from config import ANTHROPIC_API_KEY, TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID
+    missing = []
+    if not ANTHROPIC_API_KEY:
+        missing.append("ANTHROPIC_API_KEY")
+    if not TELEGRAM_BOT_TOKEN:
+        missing.append("TELEGRAM_BOT_TOKEN")
+    if not TELEGRAM_CHAT_ID:
+        missing.append("TELEGRAM_CHAT_ID")
+    if missing:
+        logger.error(f"❌ ОТСУТСТВУЮТ ПЕРЕМЕННЫЕ ОКРУЖЕНИЯ: {', '.join(missing)}")
+        logger.error("Бот будет работать в деградированном режиме — уведомления и анализ недоступны")
+    else:
+        logger.info("✅ Все ключи настроены")
+
     await tg.send_startup_message()
 
     await asyncio.gather(
