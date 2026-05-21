@@ -209,7 +209,7 @@ def get_last_24h_stats() -> dict:
 
         # Статистика по источникам
         source_stats = {}
-        for source in ["instagram", "olx", "tg_channels"]:
+        for source in ["instagram", "olx", "tg_channels", "2gis"]:
             count = session.query(func.count(Lead.id)).filter(
                 Lead.found_at >= since, Lead.source == source
             ).scalar()
