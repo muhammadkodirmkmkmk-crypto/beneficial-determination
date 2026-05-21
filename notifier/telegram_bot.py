@@ -128,13 +128,9 @@ async def notify_watch_lead(lead_data: dict, decision: dict) -> int | None:
 async def send_startup_message():
     """Сообщение при старте бота"""
     text = (
-        "🤖 *Zetta Lead Bot запущен. Работаю 24/7.*\n\n"
-        "Активные парсеры:\n"
-        "• 📸 Instagram (хэштеги ресторанов)\n"
-        "• 🏠 OLX.uz (коммерческая недвижимость)\n"
-        "• 📢 Telegram-каналы\n\n"
-        "2GIS будет подключён позже.\n"
-        f"Время запуска: {datetime.now().strftime('%d.%m.%Y %H:%M')}"
+        f"🤖 *Zetta Lead Bot запущен!* Напиши /test\n\n"
+        f"Парсеры: 📸 Instagram · 🏠 OLX · 📢 Telegram · 🗺 2GIS\n"
+        f"🕐 {datetime.now().strftime('%d.%m.%Y %H:%M')}"
     )
     return await send_message(text)
 
