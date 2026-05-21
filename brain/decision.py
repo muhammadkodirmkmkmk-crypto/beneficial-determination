@@ -11,7 +11,21 @@ import database
 
 logger = logging.getLogger(__name__)
 
-client = anthropic.Anthropic(api_key=ANTHROPIC_API_KEY)
+# Клиент создаётся лениво внутри функции — чтобы подхватить ключ из env
+_client: anthropic.Anthropic | None = None
+
+
+def _get_client() -> anthropic.Anthropic | None:
+    global _client
+    if not ANTHROPIC_API_KEY:
+        logger.error(
+            "ANTHROPIC_API_KEY не задан! "
+            "Добавь переменную окружения ANTHROPIC_API_KEY в Railway."
+        )
+        return None
+    if _client is None:
+        _client = anthropic.Anthropic(api_key=ANTHROPIC_API_KEY)
+    return _client
 
 DECISION_PROMPT = """Ты — умный агент по поиску клиентов для компании Zetta Group (Узбекистан).
 Zetta Group продаёт систему автоматизации ресторанов iiko.
@@ -85,7 +99,11 @@ async def analyze_venue(raw_data: dict) -> dict | None:
         logger.info(f"Анализирую заведение: {raw_data.get('name', 'Без названия')}")
 
         # Вызываем Claude
-        response = client.messages.create(
+        claude = _get_client()
+        if not claude:
+            return None
+
+        response = claude.messages.create(
             model=CLAUDE_MODEL,
             max_tokens=1500,
             messages=[{"role": "user", "content": prompt}],
