@@ -159,6 +159,33 @@ async def _handle_update(update: dict):
         )
 
 
+async def _set_my_commands() -> None:
+    """Регистрирует меню команд в Telegram."""
+    commands = [
+        {"command": "start",   "description": "Запустить бота"},
+        {"command": "status",  "description": "Статистика за сегодня"},
+        {"command": "sources", "description": "Какие источники работают"},
+        {"command": "test",    "description": "Запустить тестовый прогон прямо сейчас"},
+        {"command": "pause",   "description": "Поставить на паузу"},
+        {"command": "resume",  "description": "Возобновить поиск"},
+        {"command": "help",    "description": "Помощь"},
+    ]
+    try:
+        async with httpx.AsyncClient() as client:
+            resp = await client.post(
+                f"{TG_API}/setMyCommands",
+                json={"commands": commands},
+                timeout=10,
+            )
+            data = resp.json()
+            if data.get("ok"):
+                logger.info("Меню команд Telegram установлено")
+            else:
+                logger.warning(f"setMyCommands: {data}")
+    except Exception as e:
+        logger.warning(f"setMyCommands ошибка: {e}")
+
+
 async def run_forever(trigger_test_func=None):
     """
     Бесконечный цикл получения команд через Telegram long polling.
@@ -172,6 +199,12 @@ async def run_forever(trigger_test_func=None):
         return
 
     logger.info("Command bot запущен (long polling)")
+
+    # Устанавливаем меню команд
+    await _set_my_commands()
+
+    # Отправляем стартовое сообщение владельцу
+    await _send("🤖 Zetta Lead Bot запущен! Напиши /test чтобы проверить работу.")
 
     # Сбрасываем накопившиеся апдейты при старте
     try:
